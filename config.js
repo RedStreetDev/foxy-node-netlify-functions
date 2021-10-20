@@ -26,15 +26,15 @@ const config = {
         apiKey: env("FOXY_ORDERDESK_API_KEY"),
         storeId: env("FOXY_ORDERDESK_STORE_ID"),
       },
+      server: {
+        apiEndpoint: env("SERVER_API_ENDPOINT"),
+        apiID: env("SERVER_API_ID"),
+        apiKey: env("SERVER_API_KEY"),
+      },
       webflow: {
         collection: env('FOXY_WEBFLOW_COLLECTION'),
         token: env('FOXY_WEBFLOW_TOKEN') || env('WEBFLOW_TOKEN'),
       },
-      server: {
-        apiKey: env("SERVER_API_KEY"),
-        apiID: env("SERVER_API_ID"),
-        apiEndpoint: env("SERVER_API_ENDPOINT"),
-      }
     },
     skipUpdate: {
       inventory: env('FOXY_SKIP_INVENTORY_UPDATE_CODES')

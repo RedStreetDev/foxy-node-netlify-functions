@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const FoxyWebhook = require("../../foxy/FoxyWebhook.js");
 const { config } = require("../../../config.js");
 
@@ -28,16 +29,17 @@ exports.handler = async function(event, context) {
       //query server
       const response = await fetch(
         config.datastore.provider.server.apiEndpoint, {
-          method: 'GET',
-          mode: 'cors',
+          body: JSON.stringify({
+            data_point_id: item._embedded["fx:item_options"].find(option => option.name === "pid").value,
+            data_point_vid: item._embedded["fx:item_options"].find(option => option.name === "vid").value,
+            price: item.price,
+          }),
           cache: 'no-cache',
           headers: {
             'content-type': 'application/json'
           },
-          body: JSON.stringify({
-            data_point_id: item._embedded["fx:item_options"].find(option => option.name === "pid").value,
-            data_point_vid: item._embedded["fx:item_options"].find(option => option.name === "vid").value,
-          })
+          method: 'POST',
+          mode: 'cors'
         }
       );
 
@@ -53,16 +55,16 @@ exports.handler = async function(event, context) {
 
       //check if stock is available
       const json = await response.json();
-      if(json.amount <= 0){
+      if(json.valid === false){
         return {
-          body: JSON.stringify({ details: "No stock available", ok: false, }),
+          body: JSON.stringify({ details: "Invalid item", ok: false, }),
           statusCode: 200,
         }
       }
     }
 
     //all items passed check
-    console.log('OK: payment approved - stock available')
+    console.log('OK: payment approved - items verified')
     return {
       body: JSON.stringify({ details: ' ', ok: true, }),
       statusCode: 200,
