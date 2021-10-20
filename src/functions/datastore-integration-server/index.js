@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const FoxyWebhook = require("../../foxy/FoxyWebhook.js");
 const { config } = require("../../../config.js");
+const fetch = require("node-fetch");
 
 /**
  * @param {Object} event the request event built by Netlify Functions
- * @param {Object} context the context built by Netlify Functions
  * @returns {Promise<{statusCode: number, body: string}>} the response object
  * */
-exports.handler = async function(event, context) {
+exports.handler = async function(event) {
   //check env vars
   if (!validation.configuration.validate()){
     return validation.configuration.response()
@@ -79,6 +79,7 @@ exports.handler = async function(event, context) {
   }
 }
 
+// noinspection SpellCheckingInspection
 /**
  * Extract items from payload received from FoxyCart
  *
