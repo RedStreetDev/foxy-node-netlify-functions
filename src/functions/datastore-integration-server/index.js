@@ -25,7 +25,69 @@ exports.handler = async function(event) {
   //items passed format checks
   //compare items against server
   try{
+    //query server for all items
+    let responses = Array(items.length);
+    let index = 0;
     for (const item of items) {
+      responses[index++] = await fetch(
+          config.datastore.provider.server.apiEndpoint, {
+            body: JSON.stringify({
+              data_point_id: item._embedded["fx:item_options"].find(option => option.name === "pid").value,
+              data_point_vid: item._embedded["fx:item_options"].find(option => option.name === "vid").value,
+              price: item.price,
+              quantity: item.quantity,
+            }),
+            cache: 'no-cache',
+            headers: {
+              'content-type': 'application/json'
+            },
+            method: 'POST',
+            mode: 'cors'
+          }
+      );
+    }
+
+    //check responses
+    let details_msg = '';
+    let bad_items = false;
+    for (index = 0; index < responses.length; index++) {
+      //error in server
+      if (responses[index].status !== 200) {
+        details_msg += 'Server failed to handle request. Item: ' + items[index].name + '\n';
+        const err = await responses[index].text();
+        console.error(err);
+        bad_items = true;
+      }
+      //no error in server
+      else {
+        const json = await responses[index].json();
+        //item failed check
+        if (json.valid === false) {
+          console.log('Invalid Item: ' + items[index].name)
+          bad_items = true;
+          details_msg += 'Invalid Item: ' + items[index].name + '\n';
+        }
+      }
+    }
+
+    //do not accept order
+    if (bad_items) {
+      return {
+        body: JSON.stringify({ details: details_msg, ok: false, }),
+        statusCode: 200,
+      }
+    }
+    //accept order
+    else {
+      //all items passed check
+      console.log('OK: payment approved - items verified')
+      return {
+        body: JSON.stringify({ details: ' ', ok: true, }),
+        statusCode: 200,
+      }
+    }
+
+    /*for (const item of items) {
       //query server
       const response = await fetch(
         config.datastore.provider.server.apiEndpoint, {
@@ -69,7 +131,7 @@ exports.handler = async function(event) {
     return {
       body: JSON.stringify({ details: ' ', ok: true, }),
       statusCode: 200,
-    }
+    }*/
 
   } catch (e) {
     console.error(e);
