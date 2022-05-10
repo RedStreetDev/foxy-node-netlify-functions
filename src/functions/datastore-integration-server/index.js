@@ -17,6 +17,7 @@ exports.handler = async function(event) {
     return validation.input.response();
   }
   const items = extractItems(event.body);
+  console.log(items);
   //check all items for correct format
   if (!validation.items.validate(items)) {
     return validation.items.response(items);
