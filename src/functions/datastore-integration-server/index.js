@@ -61,6 +61,7 @@ exports.handler = async function(event) {
       //no error in server
       else {
         const json = await responses[index].json();
+        console.log(json);
         //item failed check
         if (json.valid === false) {
           console.log(json.msg);
