@@ -63,9 +63,9 @@ exports.handler = async function(event) {
         const json = await responses[index].json();
         //item failed check
         if (json.valid === false) {
-          console.log('Invalid Item: ' + items[index].name)
+          console.log(json.msg);
           bad_items = true;
-          details_msg += 'Invalid Item: ' + items[index].name + '\n';
+          details_msg += json.msg;
         }
       }
     }
