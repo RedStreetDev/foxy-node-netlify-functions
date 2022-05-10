@@ -17,7 +17,6 @@ exports.handler = async function(event) {
     return validation.input.response();
   }
   const items = extractItems(event.body);
-  console.log(items);
   //check all items for correct format
   if (!validation.items.validate(items)) {
     return validation.items.response(items);
@@ -34,6 +33,7 @@ exports.handler = async function(event) {
             data_point_id: item._embedded["fx:item_options"].find(option => option.name === "pid").value,
             data_point_vid: item._embedded["fx:item_options"].find(option => option.name === "vid").value,
             price: item.price,
+            quantity: item.quantity,
           }),
           cache: 'no-cache',
           headers: {
